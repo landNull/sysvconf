@@ -1,0 +1,116 @@
+#!/bin/bash
+
+# Function to display usage
+usage() {
+    echo "Usage: $0 [--list] [service] [on|off] [--level <levels>]"
+    echo "  --list           List all services and their runlevel statuses"
+    echo "  --add <service>  Add a new service to the init process"
+    echo "  --del <service>  Remove a service from the init process"
+    echo "  <service> on     Enable service for default runlevels"
+    echo "  <service> off    Disable service for default runlevels"
+    echo "  --level <levels> Specify runlevels (e.g., 2 3 5) for on/off"
+    exit 1
+}
+
+# Function to check if a service exists
+check_service() {
+    local service=$1
+    [ -f "/etc/init.d/$service" ] || { echo "Error: Service $service not found"; exit 1; }
+}
+
+# Function to list service statuses
+list_services() {
+    for service in /etc/init.d/*; do
+        [ -d "$service" ] && continue
+        service=$(basename "$service")
+        echo -n "$service "
+        for runlevel in 0 1 2 3 4 5 6; do
+            rc_dir="/etc/rc$runlevel.d/"
+            if ls $rc_dir/S??$service >/dev/null 2>&1; then
+                echo -n "$runlevel:on "
+            elif ls $rc_dir/K??$service >/dev/null 2>&1; then
+                echo -n "$runlevel:off "
+            else
+                echo -n "$runlevel:off "
+            fi
+        done
+        echo ""
+    done
+}
+
+# Function to add a service
+add_service() {
+    local service=$1
+    check_service "$service"
+    sudo update-rc.d "$service" defaults
+    echo "Service $service added to init process"
+}
+
+# Function to delete a service
+del_service() {
+    local service=$1
+    check_service "$service"
+    sudo update-rc.d -f "$service" remove
+    echo "Service $service removed from init process"
+}
+
+# Function to enable/disable service
+set_service_status() {
+    local service=$1
+    local action=$2
+    local levels=$3
+    check_service "$service"
+
+    if [ -z "$levels" ]; then
+        # Default runlevels (2-5)
+        levels="2 3 4 5"
+    fi
+
+    case $action in
+        "on")
+            for level in $levels; do
+                sudo update-rc.d "$service" enable $level
+                echo "Enabled $service for runlevel $level"
+            done
+            ;;
+        "off")
+            for level in $levels; do
+                sudo update-rc.d "$service" disable $level
+                echo "Disabled $service for runlevel $level"
+            done
+            ;;
+        *)
+            usage
+            ;;
+    esac
+}
+
+# Parse arguments
+if [ $# -eq 0 ]; then
+    usage
+fi
+
+case "$1" in
+    "--list")
+        list_services
+        ;;
+    "--add")
+        [ -z "$2" ] && usage
+        add_service "$2"
+        ;;
+    "--del")
+        [ -z "$2" ] && usage
+        del_service "$2"
+        ;;
+    *)
+        [ -z "$2" ] && usage
+        service=$1
+        action=$2
+        levels=""
+        if [ "$3" = "--level" ] && [ -n "$4" ]; then
+            levels=$4
+            shift 4
+        fi
+        set_service_status "$service" "$action" "$levels"
+        ;;
+esac
