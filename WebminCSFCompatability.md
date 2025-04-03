@@ -27,3 +27,6 @@
         CollapseWrapCopy
         
         `sudo ln -sf /usr/local/bin/sysvconf /usr/sbin/chkconfig`
+
+This solves this warning and enables the security check to complete in Webmin
+[](WebminChkConfigWarning.png)
