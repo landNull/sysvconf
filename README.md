@@ -19,10 +19,11 @@ This script provides a robust replacement for chkconfig, supporting its primary 
 - $ sudo or su - mv sysvconf /usr/local/bin
 - $ sudo chmod +x /usr/local/bin/sysvconf
 - $ sysvconf --help
-Usage: /usr/local/bin/sysvconf [--list] [service] [on|off] [--level <levels>]
+  
+"Usage: /usr/local/bin/sysvconf [--list] [service] [on|off] [--level <levels>]
   --list           List all services and their runlevel statuses
   --add <service>  Add a new service to the init process
   --del <service>  Remove a service from the init process
   <service> on     Enable service for default runlevels
   <service> off    Disable service for default runlevels
-  --level <levels> Specify runlevels (e.g., 2 3 5) for on/off
+  --level <levels> Specify runlevels (e.g., 2 3 5) for on/off"
