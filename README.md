@@ -12,13 +12,13 @@ This script provides a robust replacement for chkconfig, supporting its primary 
  [WebminCSFCompatability](WebminCSFCompatability.md)
 
 ### Setup
-clone the repo
-EX:(Using https) 
-$ git clone https://github.com/landNull/sysvconf.git
-$ cd sysvconf
-$ sudo or su - mv sysvconf /usr/local/bin
-$ sudo chmod +x /usr/local/bin/sysvconf
-$ sysvconf --help
+- clone the repo
+- EX:(Using https) 
+- $ git clone https://github.com/landNull/sysvconf.git
+- $ cd sysvconf
+- $ sudo or su - mv sysvconf /usr/local/bin
+- $ sudo chmod +x /usr/local/bin/sysvconf
+- $ sysvconf --help
 Usage: /usr/local/bin/sysvconf [--list] [service] [on|off] [--level <levels>]
   --list           List all services and their runlevel statuses
   --add <service>  Add a new service to the init process
